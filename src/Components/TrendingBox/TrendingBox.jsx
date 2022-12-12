@@ -7,6 +7,9 @@ import { CryptoState } from '../../CryptoContext'
 import { useState } from 'react'
 import { useEffect } from 'react'
 import { NavLink } from 'react-router-dom'
+import {AiFillCaretRight} from 'react-icons/ai';
+
+import MoreTrending from '../MoreTrending/MoreTrending'
 export function numberWithCommas(x) {
     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   }
@@ -25,9 +28,17 @@ const TrendingBox = () => {
   return (
    <Container className="trendingBox">
     <div className="trendingBox1 common_box">
-    <span className="trending_title" >
+    <span className="trending_title" style={{display:"flex",justifyContent:"space-between"}}>
                 Trending 
+                
+                <span className="more">
+                  <NavLink className="more_link" style={{display:"flex",justifyContent:"center",alignItems:"center",color:"#3961FB"}} to ={"/trending"}>
+                  More <AiFillCaretRight/>
+                  </NavLink>
+             
             </span>
+            </span>
+        
         <div className="trending" >
           
             {trend.map((coin)=>{
@@ -54,8 +65,14 @@ const TrendingBox = () => {
         </div>
     </div>
     <div className="trendingBox1 common_box">
-    <span className="trending_title" >
+    <span className="trending_title" style={{display:"flex",justifyContent:"space-between"}} >
                Recently Added
+               <span className="more">
+                  <NavLink className="more_link" style={{display:"flex",justifyContent:"center",alignItems:"center",color:"#3961FB"}} to ={"/trending"} >
+                  More <AiFillCaretRight/>
+                  </NavLink>
+             
+            </span>
             </span>
         <div className="trending" >
           

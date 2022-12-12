@@ -1,8 +1,9 @@
 import React from 'react'
 import { useState } from 'react'
-import "./coinTable.css"
+import "./moreTrending.css";
 import { CoinList } from '../../Api/api'
 import { CryptoState } from '../../CryptoContext'
+import { TrendingCoins } from '../../Api/api'
 import axios from 'axios'
 import { useEffect } from 'react'
 import { ThemeProvider, createTheme } from '@mui/material/styles';
@@ -10,7 +11,7 @@ import { Container, LinearProgress, Pagination, TableContainer, TextField, Typog
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
-// import { ChangingPrice } from '../../Api/api'
+
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import { Navigate } from 'react-router-dom'
@@ -46,35 +47,27 @@ export function numberWithCommas(x) {
   
     return allData;
   };
-  function convertToInternationalCurrencySystem(labelValue) {
-    // Nine Zeroes for Billions
-    return Math.abs(Number(labelValue)) >= 1.0e9
-      ? (Math.abs(Number(labelValue)) / 1.0e9).toFixed(2) + 'B'
-      : // Six Zeroes for Millions
-      Math.abs(Number(labelValue)) >= 1.0e6
-      ? (Math.abs(Number(labelValue)) / 1.0e6).toFixed(2) + 'M'
-      : // Three Zeroes for Thousands
-      Math.abs(Number(labelValue)) >= 1.0e3
-      ? (Math.abs(Number(labelValue)) / 1.0e3).toFixed(2) + 'K'
-      : Math.abs(Number(labelValue))
-      ? Math.abs(Number(labelValue))?.toFixed(2)
-      : '0.00';
-  }
-const CoinTable = () => {
+const MoreTrending = () => {
+    
     const navigate = useNavigate()
     const {currency,symbol} = CryptoState()
-    // const [changeCoin,setCoinChange] = useState([]);
+    
     const [coins,setCoins] = useState([]);
     const [loading,setLoading]= useState(false);
     const [tokenlLoading,setTokenLoading] = useState(false)
     const [search,setSearch] = useState("");
     const [page,setPage]=useState(1);
-    // new
+   
     const [historicalData,setHistoricalData] = useState();
     const [days,setDays] = useState(1);
     const [volume,setVolume] = useState([])
     const [coinToken,setCoinToken] =  useState([])
-
+    const [trend,setTrend] = useState([])
+   
+    const fetchTrending = async () =>{
+      const {data} = await axios.get(TrendingCoins(currency))
+      setTrend(data);
+    }
     const fetchCoins = async () =>{
         setLoading(true)
         const {data} = await axios.get(CoinList(currency));
@@ -95,12 +88,6 @@ const CoinTable = () => {
   }
   
  console.log(historicalData)
-    // const changeCoins = async () =>{
-    //   const {data} = await axios.get(ChangingPrice(currency));
-    //   setCoinChange(data);
-
-    // }
-    // console.log(changeCoin)
     console.log(coins)
     useEffect(()=>{
         fetchCoins();
@@ -125,6 +112,10 @@ const CoinTable = () => {
         });
       
     },[]);
+    useEffect(()=>{
+        fetchTrending()
+      },[currency])
+      console.log(trend);
     console.log(coinToken);
     const full = [...coins,...coinToken]
     console.log(full)
@@ -139,7 +130,7 @@ const CoinTable = () => {
       });
 
       const handleSearch = () =>{
-        return coins.filter((coin)=>(
+        return trend?.filter((coin)=>(
             coin.name.toLowerCase().includes(search) || coin.symbol.toLowerCase().includes(search)
         ))
       }
@@ -147,7 +138,7 @@ const CoinTable = () => {
     
        <Container style={{textAlign:"center"}}>
             <Typography variant='h4' style={{margin:18,fontFamily:"Montserrat",color:"#005373"}}>
-             Cryptocurrencies Prices By Market Cap
+            Trending  Cryptocurrencies 
             </Typography>
             <TextField label="Search For A Crypto Currency.." variant='outlined' style={{marginBottom:20,width:"100%"}} onChange={(e)=>setSearch(e.target.value)}/>
        <TableContainer>
@@ -158,8 +149,8 @@ const CoinTable = () => {
                 <Table>
                  <TableHead style={{backgroundColor:"#005373"}}>
                     <TableRow>
-                        {["Coin","Price","1h%","24h%","Market Cap"].map((head)=>(
-                            <TableCell style={{color:"white",fontWeight:"700",fontFamily:"Montserrat",width:"5%",textAlign: head=="Market Cap" ? "right":""}} key={head} >
+                        {["Coin","Price","24h%","Market Cap"].map((head)=>(
+                            <TableCell style={{color:"white",fontWeight:"700",fontFamily:"Montserrat",width:"5%",textAlign: head=="Market Cap" ? "right":""}} key={head}  >
                                {head}
                             </TableCell>
                         ))}
@@ -206,7 +197,7 @@ const CoinTable = () => {
                           
                         </TableCell>
                         {/*  */}
-                        <TableCell
+                        {/* <TableCell
                           align="right"
                           style={{
                             color: profit > 0 ? "#13C784" : "red",
@@ -214,18 +205,18 @@ const CoinTable = () => {
                             width:"10%"
                           }}
                         >
-                          {/* {profit && "+"} */}
+                         
                            <div className="symbol_text">
                            <div className="picture" style={{width:"14%"}}>
                            {profit ? <IoMdArrowDropup style={{color:"#13C784"}}/>:<AiFillCaretDown style={{color:"red"}}/>}
                           </div>
                            <div className="price_content" style={{width:"83%"}}>
-                           {row.price_change_percentage_1h_in_currency.toFixed(2)}%
+                           {row?.price_change_percentage_1h_in_currency.toFixed(2)}%
                            </div>
                            
                            </div>
                           
-                        </TableCell>
+                        </TableCell> */}
                         {/*  */}
                         <TableCell
                           align="right"
@@ -245,50 +236,34 @@ const CoinTable = () => {
                            </div>
                            
                            </div>
-                          {/* {profit && "+"} */}
+                     
                           
                         </TableCell>
                         
-                        {/* <TableCell
-                          align="right"
-                          style={{
-                            color: profit > 0 ? "rgb(14, 203, 129)" : "red",
-                            fontWeight: 500,
-                            width:"10%"
-                          }}
-                        >
-                          
-      
-                          <div className="symbol_text" >
-                          <div className="picture" style={{width:"14%"}}>
-                          {profit ?<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" style={{color:"green"}}><path d="M201.4 137.4c12.5-12.5 32.8-12.5 45.3 0l160 160c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L224 205.3 86.6 342.6c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3l160-160z"/></svg> : <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" style={{color:"red"}}><path d="M201.4 374.6c12.5 12.5 32.8 12.5 45.3 0l160-160c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L224 306.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l160 160z"/></svg>}
-                          </div>
-                           <div className="price_content" style={{width:"83%"}}>
-                           {row.price_change_percentage_7d_in_currency.toFixed(2)}%
-                           </div>
-                           </div>
-                        </TableCell> */}
+                        
                       
                         <TableCell align="right" style={{color:"black",width:"10%"}}>
                           {symbol}{" "}
-                          {/* {numberWithCommas(
+                          {numberWithCommas(
                             row.market_cap.toString().slice(0, -6)
                           )}
-                          M */}
-                          {convertToInternationalCurrencySystem(row.market_cap)}
+                          M
                         </TableCell>
                         
                             </TableRow>
                         )
                     })}
                     
-                   {page==1 ?  <HootDex/>:<></>}
+                 
                  </TableBody>
                 </Table>
             )
         }
         
        </TableContainer>
+
+       
+
       <Pagination 
        count={(handleSearch()?.length/10).toFixed(0)}
        
@@ -307,4 +282,4 @@ const CoinTable = () => {
   )
 }
 
-export default CoinTable
+export default MoreTrending;

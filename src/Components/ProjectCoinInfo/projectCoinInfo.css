@@ -1,0 +1,35 @@
+.chart-button{
+    cursor: pointer;
+    border: 1px solid #005373;
+    border-radius: 5;
+    -webkit-border-radius: 5;
+    -moz-border-radius: 5;
+    -ms-border-radius: 5;
+    -o-border-radius: 5;
+    padding: 10px;
+    padding-left: 20px;
+    padding-right: 20px;
+    font-family: sans-serif;
+    width: 22%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: all .4s;
+    -webkit-transition: all .4s;
+    -moz-transition: all .4s;
+    -ms-transition: all .4s;
+    -o-transition: all .4s;
+}
+
+.chart-button:hover{
+    /* background-color: rgb(255, 99, 132); */
+    background-color: #005373;
+    color: white !important;
+}
+
+.back_image{
+    width: 10%;
+    position: relative;
+    top: 58%;
+    right: -43%;
+}

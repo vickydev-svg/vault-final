@@ -10,6 +10,8 @@ import TableCell from '@mui/material/TableCell';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import { TableContainer } from '@mui/material';
+import {AiFillCaretDown} from 'react-icons/ai';
+import {IoMdArrowDropup} from 'react-icons/io';
 import { LinearProgress, Pagination,TextField, Typography } from '@mui/material'
 import { NavLink } from 'react-router-dom';
 import "./hootDex.css"
@@ -40,13 +42,13 @@ const removeDuplicatedToken = (allData) => {
   function convertToInternationalCurrencySystem(labelValue) {
     // Nine Zeroes for Billions
     return Math.abs(Number(labelValue)) >= 1.0e9
-      ? (Math.abs(Number(labelValue)) / 1.0e9).toFixed(2) + 'b'
+      ? (Math.abs(Number(labelValue)) / 1.0e9).toFixed(2) + 'B'
       : // Six Zeroes for Millions
       Math.abs(Number(labelValue)) >= 1.0e6
-      ? (Math.abs(Number(labelValue)) / 1.0e6).toFixed(2) + 'm'
+      ? (Math.abs(Number(labelValue)) / 1.0e6).toFixed(2) + 'M'
       : // Three Zeroes for Thousands
       Math.abs(Number(labelValue)) >= 1.0e3
-      ? (Math.abs(Number(labelValue)) / 1.0e3).toFixed(2) + 'k'
+      ? (Math.abs(Number(labelValue)) / 1.0e3).toFixed(2) + 'K'
       : Math.abs(Number(labelValue))
       ? Math.abs(Number(labelValue))?.toFixed(2)
       : '0.00';
@@ -58,6 +60,8 @@ const HootDex = () => {
     const [loading,setLoading]= useState(false);
     const [projectToken,setProjectToken] = useState([])
     const [holdingToken,setHoldingToken] = useState([]);
+    const [pecu,setPecu] = useState([])
+    const [pecuMarket,setPecuMarket] = useState([]);
     const fetchProject = async () =>{
       const {data} = await axios.get('https://api.pecunovus.net/hootdex/all-project-token')
       setProjectToken(data);
@@ -66,6 +70,20 @@ const HootDex = () => {
       const {data} = await axios.get('https://api.pecunovus.net/wallet/get_all_tokens_holding')
       setHoldingToken(data);
     }
+    
+    const fetchPecu = async () =>{
+      const {data} = await axios.get('https://api.pecunovus.net/wallet/get_change_index_coin')
+      setPecu(data);
+    }
+
+    const fetchMarket = async () =>{
+      const {data} = await axios.get('https://api.pecunovus.net/wallet/marketcap')
+      setPecuMarket(data);
+    }
+
+    console.log(pecuMarket);
+    console.log(pecu);
+    
     console.log(holdingToken);
     useEffect(() => {
         setLoading(true);
@@ -88,11 +106,17 @@ const HootDex = () => {
       useEffect(()=>{
        fetchHolding()
       },[])
+      useEffect(()=>{
+        fetchPecu();
+       },[])
+       useEffect(()=>{
+        fetchMarket();
+       },[])
       console.log(holdingToken?.tokens)
       console.log(projectToken?.data);
       console.log(tokens)
       
-
+  
   return (
    <>
 
@@ -103,14 +127,112 @@ const HootDex = () => {
         <>
         
         
-         
+           
+           <TableRow className = "row" style={{cursor:"pointer",marginBottom:"20 !important"}}>
+           <TableCell component='th' scope="row" styles={{display:"flex",flexDirection:"column",justifyContent:"center",width:"5%"}} >
+                        <img src='https://pecunovus.net/static/media/icon.25c8ec299d961b9dd524.ico' height="20" style={{marginBottom:10}} />
+                        <div
+                     style={{ display: "flex", flexDirection: "column",fontSize:"22px"}}
+                   >
+                     <span
+                              style={{
+                                textTransform: "uppercase",
+                                fontSize: 22,
+                                color:"black"
+                              }}
+                            >
+                            PECU
+                            </span>
+                            <span style={{ color: "darkgrey" ,fontSize:"15px"}}>
+                            Pecu Novus
+                            </span>
+                  
+                   </div>
+               
+                      </TableCell>
+                      <TableCell align="right" style={{color:"black",width:"15%"}}>
+                  <div className="price" style={{display:"flex"}}>
+                  ${pecu?.today_value}
+                  </div>
+                  
+                </TableCell>
+                {/*  */}
+                <TableCell
+                  align="right"
+                  style={{
+                    color: pecu?.value > 0 ? "#13C784" : "red",
+                    fontWeight: 500,
+                    width:"10%"
+                  }}
+                >
+                  {/* {profit && "+"} */}
+                   <div className="symbol_text">
+                   <div className="picture" style={{width:"14%"}}>
+                   {pecu.value > 0 ? <IoMdArrowDropup style={{color:"#13C784"}}/>:<AiFillCaretDown style={{color:"red"}}/>}
+                  </div>
+                   <div className="price_content" style={{width:"83%"}}>
+                   {pecu?.value}
+                    %
+                   </div>
+                   
+                   </div>
+                   
+                  
+                </TableCell>
+                {/*  */}
+                <TableCell
+                  align="right"
+                  style={{
+                    color: pecu.value > 0 ? "#13C784" : "red",
+                    fontWeight: 500,
+                    width:"10%"
+                  }}
+                >
 
+                  
+                  <div className="symbol_text">
+                   <div className="picture" style={{width:"14%"}}>
+                   {pecu.value >0 ? <IoMdArrowDropup style={{color:"#13C784"}}/>:<AiFillCaretDown style={{color:"red"}}/>}
+                  </div>
+                   <div className="price_content" style={{width:"83%"}}>
+                   {pecu?.value} %
+                   </div>
+                   
+                   </div>
+                </TableCell>
+                
+                <TableCell
+                  align="right"
+                  style={{
+                    color: "black",
+                    
+                    width:"10%"
+                  }}
+                >
+        
+         {/* {each.wrapAmount * each.initialFinal} */}${' '}
+         {/* {convertToInternationalCurrencySystem(
+                      (pecuMarket?.MARKET_CAP).toFixed(2)
+                    )} */}
+                    {convertToInternationalCurrencySystem(
+                      (pecuMarket?.MARKET_CAP)
+                    )}
+                   
+     {}
+                </TableCell>
+           </TableRow>
+
+           {/*  */}
+           {/*  */}
+           {/*  */}
+           {/*  */}
+           {/*  */}
             {tokens.map((row)=>{
                 const profit = row.price_change_percentage_24h > 0;
                 console.log()
                 return (
                     <TableRow
-                    // className="row"
+                    className="row"
                     key={row.name}
                     style={{cursor:"pointer",marginBottom:"20 !important"}}
                     >
@@ -137,7 +259,7 @@ const HootDex = () => {
                 <TableCell
                   align="right"
                   style={{
-                    color: profit > 0 ? "rgb(14, 203, 129)" : "red",
+                    color: profit > 0 ? "#13C784" : "red",
                     fontWeight: 500,
                     width:"10%"
                   }}
@@ -145,7 +267,7 @@ const HootDex = () => {
                   {/* {profit && "+"} */}
                    <div className="symbol_text">
                    <div className="picture" style={{width:"14%"}}>
-                   {profit ?<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" style={{color:"green"}}><path d="M201.4 137.4c12.5-12.5 32.8-12.5 45.3 0l160 160c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L224 205.3 86.6 342.6c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3l160-160z"/></svg> : <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" style={{color:"red"}}><path d="M201.4 374.6c12.5 12.5 32.8 12.5 45.3 0l160-160c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L224 306.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l160 160z"/></svg>}
+                   {profit ? <IoMdArrowDropup style={{color:"#13C784"}}/>:<AiFillCaretDown style={{color:"red"}}/>}
                   </div>
                    <div className="price_content" style={{width:"83%"}}>
                    {(
@@ -165,7 +287,7 @@ const HootDex = () => {
                 <TableCell
                   align="right"
                   style={{
-                    color: profit > 0 ? "rgb(14, 203, 129)" : "red",
+                    color: profit > 0 ? "#13C784" : "red",
                     fontWeight: 500,
                     width:"10%"
                   }}
@@ -183,7 +305,7 @@ const HootDex = () => {
                  */}
                   <div className="symbol_text">
                    <div className="picture" style={{width:"14%"}}>
-                   {profit ?<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" style={{color:"green"}}><path d="M201.4 137.4c12.5-12.5 32.8-12.5 45.3 0l160 160c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L224 205.3 86.6 342.6c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3l160-160z"/></svg> : <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" style={{color:"red"}}><path d="M201.4 374.6c12.5 12.5 32.8 12.5 45.3 0l160-160c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L224 306.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l160 160z"/></svg>}
+                   {profit ? <IoMdArrowDropup style={{color:"#13C784"}}/>:<AiFillCaretDown style={{color:"red"}}/>}
                   </div>
                    <div className="price_content" style={{width:"83%"}}>
                    {convertToInternationalCurrencySystem(
@@ -219,6 +341,7 @@ const HootDex = () => {
                   key={index}
                   style={{cursor:"pointer",marginBottom:"20 !important"}}
                   onClick={()=>navigate(`/project-token/${each?.token_symbol}`)}
+                  className="row"
                   >
                    
                     <TableCell component='th' scope="row" styles={{display:"flex",flexDirection:"column",justifyContent:"center",width:"5%"}} >
@@ -258,18 +381,19 @@ const HootDex = () => {
                     width:"10%"
                   }}
                 >
+                                     
                   {/* {profit && "+"} */}
                    <div className="symbol_text">
                    <div className="picture" style={{width:"14%"}}>
                    {each.priceChange > 0 ? (
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" style={{color:"green"}}><path d="M201.4 137.4c12.5-12.5 32.8-12.5 45.3 0l160 160c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L224 205.3 86.6 342.6c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3l160-160z"/></svg>
+                       <IoMdArrowDropup style={{color:"#13C784"}}/>
                     ) : each.priceChange < 0 ? (
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" style={{color:"red"}}><path d="M201.4 374.6c12.5 12.5 32.8 12.5 45.3 0l160-160c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L224 306.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l160 160z"/></svg>
+                      <AiFillCaretDown style={{color:"red"}}/>
                     ) : (
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" style={{color:"green"}}><path d="M201.4 137.4c12.5-12.5 32.8-12.5 45.3 0l160 160c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L224 205.3 86.6 342.6c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3l160-160z"/></svg>
+                      <IoMdArrowDropup style={{color:"#13C784"}}/>
                     )}
                   </div>
-                   <div className="price_content" style={{width:"83%",color: each.priceChange >= 0? "green":"red"} }>
+                   <div className="price_content" style={{width:"83%",color: each.priceChange >= 0? "#13C784":"red"} }>
                    {(each.priceChange / each.token_price).toFixed(2)} %
                    </div>
                    
@@ -299,14 +423,14 @@ const HootDex = () => {
                    <div className="symbol_text">
                    <div className="picture" style={{width:"14%"}}>
                    {each.priceChange > 0 ? (
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" style={{color:"green"}}><path d="M201.4 137.4c12.5-12.5 32.8-12.5 45.3 0l160 160c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L224 205.3 86.6 342.6c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3l160-160z"/></svg>
+                       <IoMdArrowDropup style={{color:"#13C784"}}/>
                     ) : each.priceChange < 0 ? (
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" style={{color:"red"}}><path d="M201.4 374.6c12.5 12.5 32.8 12.5 45.3 0l160-160c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L224 306.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l160 160z"/></svg>
+                      <AiFillCaretDown style={{color:"red"}}/>
                     ) : (
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" style={{color:"green"}}><path d="M201.4 137.4c12.5-12.5 32.8-12.5 45.3 0l160 160c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L224 205.3 86.6 342.6c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3l160-160z"/></svg>
+                      <IoMdArrowDropup style={{color:"#13C784"}}/>
                     )}
                   </div>
-                   <div className="price_content" style={{width:"83%",color:each.priceChange >= 0? "green":"red"}}>
+                   <div className="price_content" style={{width:"83%",color:each.priceChange >= 0? "#13C784":"red"}}>
                    {(each.priceChange / each.token_price).toFixed(2)} %
                    </div>
                    
@@ -382,14 +506,14 @@ const HootDex = () => {
                    <div className="symbol_text">
                    <div className="picture" style={{width:"14%"}}>
                    {each.priceChange > 0 ? (
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" style={{color:"green"}}><path d="M201.4 137.4c12.5-12.5 32.8-12.5 45.3 0l160 160c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L224 205.3 86.6 342.6c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3l160-160z"/></svg>
+                       <IoMdArrowDropup style={{color:"#13C784"}}/>
                     ) : each.priceChange < 0 ? (
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" style={{color:"red"}}><path d="M201.4 374.6c12.5 12.5 32.8 12.5 45.3 0l160-160c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L224 306.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l160 160z"/></svg>
+                      <AiFillCaretDown style={{color:"red"}}/>
                     ) : (
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" style={{color:"green"}}><path d="M201.4 137.4c12.5-12.5 32.8-12.5 45.3 0l160 160c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L224 205.3 86.6 342.6c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3l160-160z"/></svg>
+                      <IoMdArrowDropup style={{color:"#13C784"}}/>
                     )}
                   </div>
-                   <div className="price_content" style={{width:"83%",color:each.priceChange >= 0? "green":"red"}}>
+                   <div className="price_content" style={{width:"83%",color:each.priceChange >= 0? "#13C784":"red"}}>
                    {(each.priceChange / each.token_price).toFixed(2)} %
                    </div>
                    
@@ -419,14 +543,14 @@ const HootDex = () => {
                    <div className="symbol_text">
                    <div className="picture" style={{width:"14%"}}>
                    {each.priceChange > 0 ? (
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" style={{color:"green"}}><path d="M201.4 137.4c12.5-12.5 32.8-12.5 45.3 0l160 160c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L224 205.3 86.6 342.6c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3l160-160z"/></svg>
+                       <IoMdArrowDropup style={{color:"#13C784"}}/>
                     ) : each.priceChange < 0 ? (
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" style={{color:"red"}}><path d="M201.4 374.6c12.5 12.5 32.8 12.5 45.3 0l160-160c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L224 306.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l160 160z"/></svg>
+                      <AiFillCaretDown style={{color:"red"}}/>
                     ) : (
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" style={{color:"green"}}><path d="M201.4 137.4c12.5-12.5 32.8-12.5 45.3 0l160 160c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L224 205.3 86.6 342.6c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3l160-160z"/></svg>
+                      <IoMdArrowDropup style={{color:"#13C784"}}/>
                     )}
                   </div>
-                   <div className="price_content" style={{width:"83%",color:each.priceChange >= 0? "green":"red"}}>
+                   <div className="price_content" style={{width:"83%",color:each.priceChange >= 0? "#13C784":"red"}}>
                    {(each.priceChange / each.token_price).toFixed(2)} %
                    </div>
                    

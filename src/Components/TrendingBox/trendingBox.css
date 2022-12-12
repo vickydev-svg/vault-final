@@ -32,8 +32,8 @@
 .common_box{
     width: 40%;
     height: 100%;
-	overflow: scroll;
-    padding: 0rem 2rem 1rem 2rem;
+	overflow: hidden;
+    padding: 2rem 2rem 1rem 2rem;
     background: rgba( 242, 233, 233, 0.3 );
     box-shadow: 0 8px 32px 0 #00527383;
     backdrop-filter: blur( 3px );

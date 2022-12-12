@@ -92,26 +92,12 @@ import {
          <Typography variant='h3' className='heading'>
               {tokenPage?.token_name}
          </Typography>
-         <Typography variant='subtitle1' className='description' style={{color:"black",fontWeight:"light",width:"100%",fontFamily:"Montserrat",padding:25,paddingBottom:25}}>
+         <Typography variant='subtitle1' className='description' style={{color:"black",fontWeight:"light",width:"100%",fontFamily:"Montserrat",padding:"25px 0px 25px 0",paddingBottom:25}}>
               {tokenPage?.token_desc}
          </Typography>
     
-         <div className="market_data">
-              <span style={{ display: "flex" }}>
-                <Typography variant="h5" className="heading">
-                  Rank:
-                </Typography>
-                &nbsp; &nbsp;
-                <Typography
-                  variant="h5"
-                  style={{
-                    fontFamily: "Montserrat",
-                    color:"black"
-                  }}
-                >
-                  {tokenPage?.id}
-                </Typography>
-              </span>
+         <div className="market_data" style={{width:"100%"}}>
+              
     
               <span style={{ display: "flex" }}>
                 <Typography variant="h5" className="heading">
@@ -167,7 +153,7 @@ import {
 
        <div className='container2'>
             <div className='info'>
-               <img src={tokenPage?.image}/>
+               <img src={tokenPage?.image} style={{width:"40px"}}/>
                <span className='symbol'>Symbol: {tokenPage?.token_symbol}</span>
                <span className='name'>Name: {tokenPage?.token_name}</span>
                <span className='description'>

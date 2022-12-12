@@ -7,7 +7,9 @@ import { CircularProgress } from '@mui/material';
 import { chartDays } from './chartDays';
 import { Chart as ChartJS, registerables } from 'chart.js';
 import { Chart } from 'react-chartjs-2';
+import CustomButtons from '../Buttons/CustomButtons';
 import "./projectCoinInfo.css"
+import back from "../../Images/pictureCenter.svg"
 ChartJS.register(...registerables);
 
 const ProjectCoinInfo = ({ coin }) => {
@@ -75,6 +77,7 @@ const ProjectCoinInfo = ({ coin }) => {
         
           {coin?.id ? (
             <>
+              <img src={back} className="back_image" alt="" />
               {' '}
               <Line
                 data={{
@@ -128,6 +131,7 @@ const ProjectCoinInfo = ({ coin }) => {
             </>
           ) : (
             <>
+            <img src={back} className="back_image" alt="" />
               {' '}
               <Line
                 data={{
@@ -139,7 +143,8 @@ const ProjectCoinInfo = ({ coin }) => {
                     {
                       data: historicData.map((coin) => coin.Price),
                       label: `Price ( Past ${days} Days ) in ${currency}`,
-                      borderColor: '#EEBC1D'
+                      borderColor: '#005373',
+                      backgroundColor: '#005373',
                     }
                   ]
                 }}
@@ -160,23 +165,36 @@ const ProjectCoinInfo = ({ coin }) => {
                 }}
               >
                 {chartDays?.map((day) => (
-                  <button
-                    className="header-link chart-button"
-                    key={day.value}
-                    onClick={() => {
-                      if (coin.id) {
-                        setDays(day.value);
-                        setflag(false);
-                      } else {
-                        setDays(day.value);
-                        setflag(false);
-                        updateChart(day.value);
-                      }
-                    }}
-                    selected={day.value === days}
-                  >
-                    {day.label}
-                  </button>
+                  <CustomButtons key={day.value}
+                  onClick={() => {
+                    if (coin.id) {
+                      setDays(day.value);
+                      setflag(false);
+                    } else {
+                      setDays(day.value);
+                      setflag(false);
+                      updateChart(day.value);
+                    }
+                  }}
+                  selected={day.value === days}> {day.label}</CustomButtons>
+                  // <button
+                    
+                  //   key={day.value}
+                  //   onClick={() => {
+                  //     if (coin.id) {
+                  //       setDays(day.value);
+                  //       setflag(false);
+                  //     } else {
+                  //       setDays(day.value);
+                  //       setflag(false);
+                  //       updateChart(day.value);
+                  //     }
+                  //   }}
+                  //   selected={day.value === days}
+                    
+                  // >
+                  //   {day.label}
+                  // </button>
                 ))}
               </div>
             </>
