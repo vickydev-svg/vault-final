@@ -114,7 +114,7 @@ useEffect(()=>{
                 <MenuItem  onClick={handleCloseNavMenu} style={{color:"#005373"}}>
                 <a href="https://www.megahoot.com/cryptotools/" target="_blank">CryptoTools</a>
                 </MenuItem>
-          <Select variant='outlined' style={{width:100,height:40,marginRight:15}} value={currency} onChange={(e)=>setCurrency(e.target.value)}>
+          <Select variant='outlined' style={{width:100,height:40,marginRight:15}} value={currency} disabled onChange={(e)=>setCurrency(e.target.value)}>
             
             {currencyList?.map((list)=>{
               return <MenuItem value={list.toUpperCase()}>{list.toUpperCase()}</MenuItem>

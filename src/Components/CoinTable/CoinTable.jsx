@@ -124,23 +124,21 @@ const CoinTable = () => {
         
     }
 
-    const fetchHistoricData= async () =>{
+  //   const fetchHistoricData= async () =>{
       
-      const {data} = await axios.get(HistoricalChart(coins.id,days,currency))
+  //     const {data} = await axios.get(HistoricalChart(coins.id,days,currency))
     
-      setHistoricalData(data.prices);
+  //     setHistoricalData(data.prices);
       
       
-  }
+  // }
   
 
     useEffect(()=>{
-        fetchCoins();
+    fetchCoins();
         
-    },[currency])
-    useEffect(()=>{
-      fetchHistoricData();
-    })
+    },[])
+ 
   
    function convertToInternationalCurrencySystem(labelValue) {
       // Nine Zeroes for Billions
@@ -211,21 +209,10 @@ const CoinTable = () => {
                         return (
                             <TableRow
                         
-                            onClick={()=>{
-                              if(row.symbol=="XUSDT"||row.symbol=="XXMG"||row.symbol=="XETH"||row.symbol=="BTC"){
-                                navigate(`/coins/${row.symbol}`)
-                              }
-
-                              else if(row.token_symbol=="MMFx"||row.token_symbol=="TBHAx"||row.token_symbol=="MLABx"||row.token_symbol=="MKTBx"||row.token_symbol=="STRMx"){
-                                navigate(`/project-token/${row.token_symbol}`)
-                              }
-
-                              else if (row.token_symbol=="NRLh"||row.token_symbol=="SPARh"||row.token_symbol=="TURNh"||row.token_symbol=="SFPh"||row.token_symbol=="MLABh"||row.token_symbol=="SHABh"||row.token_symbol=="TBXRh"){
-                                navigate(`holding-token/${row.token_symbol}`);
-                              }
-                              else{
-                                navigate(`/coins/${row.id}`)
-                              }
+                            onClick={() => {
+                             
+                              row?.symbol[0]==='X'? navigate(`/coins/${row.symbol}`):row.symbol[row.symbol.length-1]==='x'?  navigate(`/project-token/${row.token_symbol}`):row.symbol[row.symbol.length-1]==='h'?navigate(`holding-token/${row.token_symbol}`): navigate(`/coins/${row.id}`)
+                             
                             }}
                             
                             
@@ -240,12 +227,15 @@ const CoinTable = () => {
                           >
                             <span
                               style={{
-                                textTransform: "uppercase",
+                                textTransform:  row?.symbol[0]==='X'|| row.symbol[row.symbol.length-1]==='x' ||row.symbol[row.symbol.length-1]==='h'?"":  "uppercase",
                                 fontSize: 22,
                                 color:"black"
                               }}
                             >
-                              {row?.symbol}
+                                  {
+                                    row?.symbol[0]==='X'?  row?.symbol[0]?.toLowerCase()+row.symbol.slice(1):row.symbol[row.symbol.length-1]==='x'?  row?.symbol:row.symbol[row.symbol.length-1]==='h'? row?.symbol:  row?.symbol
+                            
+                                    }
                             </span>
                             <span style={{ color: "darkgrey" }}>
                               {row?.name}
