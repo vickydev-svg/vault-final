@@ -13,7 +13,7 @@ const CryptoContext = ({children}) => {
         setSymbol("$");
        }
        else if (currency==="BTC"){
-         setSymbol("$");
+         setSymbol("BTC");
         }
         else if (currency==="ETH"){
          setSymbol("ETH");
