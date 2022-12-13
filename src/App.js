@@ -6,6 +6,7 @@ import HomePage from './Pages/HomePage/HomePage';
 import CoinPage from './Pages/CoinPage/CoinPage';
 import ProjectToken from './Components/ProjectToken/ProjectToken';
 import MoreTrending from './Components/MoreTrending/MoreTrending';
+import HoldingTokens from './Components/HoldingTokens/HoldingTokens';
 function App() {
 
   return (
@@ -18,6 +19,10 @@ function App() {
      <Route
             path="/project-token/:id"
             element={<ProjectToken />}
+          />
+           <Route
+            path="/holding-token/:id"
+            element={<HoldingTokens/>}
           />
      </Routes>
     </div>

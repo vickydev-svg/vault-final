@@ -18,9 +18,13 @@ import { useNavigate } from 'react-router-dom';
 import { HistoricalChart } from '../../Api/api'
 import CoinInfo from "../CoinInfo/CoinInfo"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import {AiFillCaretDown} from 'react-icons/ai';
-import {IoMdArrowDropup} from 'react-icons/io';
 import HootDex from '../Hootdex/HootDex'
+import {AiFillCaretDown} from 'react-icons/ai';
+import {BiUpArrow} from 'react-icons/bi';
+import {IoMdArrowDropup} from 'react-icons/io';
+import {IoMdArrowDropdown} from 'react-icons/io';
+
+
 export function numberWithCommas(x) {
     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   }
@@ -46,20 +50,6 @@ export function numberWithCommas(x) {
   
     return allData;
   };
-  function convertToInternationalCurrencySystem(labelValue) {
-    // Nine Zeroes for Billions
-    return Math.abs(Number(labelValue)) >= 1.0e9
-      ? (Math.abs(Number(labelValue)) / 1.0e9).toFixed(2) + 'B'
-      : // Six Zeroes for Millions
-      Math.abs(Number(labelValue)) >= 1.0e6
-      ? (Math.abs(Number(labelValue)) / 1.0e6).toFixed(2) + 'M'
-      : // Three Zeroes for Thousands
-      Math.abs(Number(labelValue)) >= 1.0e3
-      ? (Math.abs(Number(labelValue)) / 1.0e3).toFixed(2) + 'K'
-      : Math.abs(Number(labelValue))
-      ? Math.abs(Number(labelValue))?.toFixed(2)
-      : '0.00';
-  }
 const CoinTable = () => {
     const navigate = useNavigate()
     const {currency,symbol} = CryptoState()
@@ -75,11 +65,62 @@ const CoinTable = () => {
     const [volume,setVolume] = useState([])
     const [coinToken,setCoinToken] =  useState([])
 
-    const fetchCoins = async () =>{
+  const fetchCoins = async () => {
+      setCoins([])
         setLoading(true)
-        const {data} = await axios.get(CoinList(currency));
-        setCoins(data);
-        setLoading(false);
+      const { data } = await axios.get(CoinList(currency));
+    const wrapToken = await axios.get(`https://api.pecunovus.net/wallet/get_all_tokens_wrap_new`)
+    const projectToken = await axios.get(`https://api.pecunovus.net/hootdex/all-project-token`)
+    const holdingToken = await axios.get('https://api.pecunovus.net/wallet/get_all_tokens_holding')
+  
+   
+    wrapToken.data.tokens.forEach((token) => {
+      setCoins((prev) => [...prev, {
+        ...token, market_cap: token.currentPrice * token.amount, image: token.logo,
+        current_price: token.currentPrice,
+        price_change_percentage_24h_in_currency: ((token.currentPrice - token.firstPrice) /
+          token.currentPrice) * 100,
+        price_change_percentage_1h_in_currency:((token.currentPrice - token.firstPrice) /
+        (3 * token.currentPrice)) *
+      100
+    
+      
+      }]);
+    })
+  
+    projectToken.data.data.forEach((token) => {
+     
+      setCoins((prev) => [...prev,
+        {
+          ...token, market_cap: token.token_price * token.amount_issued,
+          name: token.token_name, symbol: token.token_symbol,
+          current_price: token.token_price,
+        price_change_percentage_24h_in_currency: (token.priceChange / (3 * token.token_price)),
+        price_change_percentage_1h_in_currency:(token.priceChange / (  token.token_price))
+    
+      
+      }]);
+    })
+
+    holdingToken.data.tokens.forEach((token) => {
+     
+      setCoins((prev) => [...prev,
+        {
+          ...token, market_cap: token.token_price * token.amount_issued,
+          name: token.token_name, symbol: token.token_symbol,
+          current_price: token.token_price,
+          price_change_percentage_24h_in_currency: (token.priceChange / (3 * token.token_price)),
+          price_change_percentage_1h_in_currency:(token.priceChange / (  token.token_price))
+      
+    
+      
+      }]);
+    })
+    setCoins((prev)=>[...prev,...data]);
+   
+    setLoading(false);
+    
+
         
     }
 
@@ -87,21 +128,12 @@ const CoinTable = () => {
       
       const {data} = await axios.get(HistoricalChart(coins.id,days,currency))
     
-     
-      console.log(data)
       setHistoricalData(data.prices);
       
       
   }
   
- console.log(historicalData)
-    // const changeCoins = async () =>{
-    //   const {data} = await axios.get(ChangingPrice(currency));
-    //   setCoinChange(data);
 
-    // }
-    // console.log(changeCoin)
-    console.log(coins)
     useEffect(()=>{
         fetchCoins();
         
@@ -109,25 +141,24 @@ const CoinTable = () => {
     useEffect(()=>{
       fetchHistoricData();
     })
+  
+   function convertToInternationalCurrencySystem(labelValue) {
+      // Nine Zeroes for Billions
+      return Math.abs(Number(labelValue)) >= 1.0e9
+        ? (Math.abs(Number(labelValue)) / 1.0e9).toFixed(2) + 'B'
+        : // Six Zeroes for Millions
+        Math.abs(Number(labelValue)) >= 1.0e6
+        ? (Math.abs(Number(labelValue)) / 1.0e6).toFixed(2) + 'M'
+        : // Three Zeroes for Thousands
+        Math.abs(Number(labelValue)) >= 1.0e3
+        ? (Math.abs(Number(labelValue)) / 1.0e3).toFixed(2) + 'K'
+        : Math.abs(Number(labelValue))
+        ? Math.abs(Number(labelValue))?.toFixed(2)
+        : '0.00';
+    }
 
-    useEffect(() => {
-      setTokenLoading(true);
-      axios
-        .get(`https://api.pecunovus.net/wallet/get_all_tokens_wrap`)
-        .then((res) => {
-          if (res.data.status) {
-            setCoinToken(removeDuplicatedToken(res.data.tokens));
-          }
-          setTokenLoading(false);
-        })
-        .catch((err) => {
-          setTokenLoading(false);
-        });
-      
-    },[]);
-    console.log(coinToken);
-    const full = [...coins,...coinToken]
-    console.log(full)
+    
+ 
     const darkTheme = createTheme({
 
         palette: {
@@ -140,9 +171,15 @@ const CoinTable = () => {
 
       const handleSearch = () =>{
         return coins.filter((coin)=>(
-            coin.name.toLowerCase().includes(search) || coin.symbol.toLowerCase().includes(search)
+            coin?.name?.toLowerCase().includes(search) || coin?.symbol?.toLowerCase().includes(search)
         ))
       }
+    
+      console.log(coins)
+  // useEffect(() => {
+  //   coins.sort((a,b)=>a.market_cap-b.market_cap)
+  // },[coins])
+
   return (
     
        <Container style={{textAlign:"center"}}>
@@ -159,7 +196,7 @@ const CoinTable = () => {
                  <TableHead style={{backgroundColor:"#005373"}}>
                     <TableRow>
                         {["Coin","Price","1h%","24h%","Market Cap"].map((head)=>(
-                            <TableCell style={{color:"white",fontWeight:"700",fontFamily:"Montserrat",width:"5%",textAlign: head=="Market Cap" ? "right":""}} key={head} >
+                            <TableCell style={{color:"white",fontWeight:"700",fontFamily:"Montserrat",width:"5%"}} key={head} >
                                {head}
                             </TableCell>
                         ))}
@@ -169,12 +206,29 @@ const CoinTable = () => {
                  <TableBody>
 
                     {handleSearch().slice((page-1)*10,(page-1) * 10+10).map((row)=>{
-                        const profit = row.price_change_percentage_24h > 0;
-                        console.log()
+                        const profit = row?.price_change_percentage_24h > 0;
+                       
                         return (
                             <TableRow
                         
-                            onClick={()=>navigate(`/coins/${row.id}`)}
+                            onClick={()=>{
+                              if(row.symbol=="XUSDT"||row.symbol=="XXMG"||row.symbol=="XETH"||row.symbol=="BTC"){
+                                navigate(`/coins/${row.symbol}`)
+                              }
+
+                              else if(row.token_symbol=="MMFx"||row.token_symbol=="TBHAx"||row.token_symbol=="MLABx"||row.token_symbol=="MKTBx"||row.token_symbol=="STRMx"){
+                                navigate(`/project-token/${row.token_symbol}`)
+                              }
+
+                              else if (row.token_symbol=="NRLh"||row.token_symbol=="SPARh"||row.token_symbol=="TURNh"||row.token_symbol=="SFPh"||row.token_symbol=="MLABh"||row.token_symbol=="SHABh"||row.token_symbol=="TBXRh"){
+                                navigate(`holding-token/${row.token_symbol}`);
+                              }
+                              else{
+                                navigate(`/coins/${row.id}`)
+                              }
+                            }}
+                            
+                            
                             className="row"
                             key={row.name}
                             style={{cursor:"pointer",marginBottom:"20 !important"}}
@@ -191,17 +245,17 @@ const CoinTable = () => {
                                 color:"black"
                               }}
                             >
-                              {row.symbol}
+                              {row?.symbol}
                             </span>
                             <span style={{ color: "darkgrey" }}>
-                              {row.name}
+                              {row?.name}
                             </span>
                           </div>
                           {/*  */}
                               </TableCell>
                               <TableCell align="right" style={{color:"black",width:"15%"}}>
                           <div className="price" style={{display:"flex"}}>
-                          {symbol}{numberWithCommas(row.current_price.toFixed(2))}
+                                {symbol}{(row?.current_price?.toFixed(2))}
                           </div>
                           
                         </TableCell>
@@ -209,7 +263,7 @@ const CoinTable = () => {
                         <TableCell
                           align="right"
                           style={{
-                            color: profit > 0 ? "#13C784" : "red",
+                            color: row?.price_change_percentage_1h_in_currency >0 ? "#13C784" : "red",
                             fontWeight: 500,
                             width:"10%"
                           }}
@@ -217,10 +271,10 @@ const CoinTable = () => {
                           {/* {profit && "+"} */}
                            <div className="symbol_text">
                            <div className="picture" style={{width:"14%"}}>
-                           {profit ? <IoMdArrowDropup style={{color:"#13C784"}}/>:<AiFillCaretDown style={{color:"red"}}/>}
+                          {row?.price_change_percentage_1h_in_currency >0  ?<IoMdArrowDropup style={{color:"#13C784"}}/> : <IoMdArrowDropdown style={{color:"red"}}/>}
                           </div>
                            <div className="price_content" style={{width:"83%"}}>
-                           {row.price_change_percentage_1h_in_currency.toFixed(2)}%
+                           {row?.price_change_percentage_1h_in_currency?.toFixed(2)}%
                            </div>
                            
                            </div>
@@ -230,7 +284,7 @@ const CoinTable = () => {
                         <TableCell
                           align="right"
                           style={{
-                            color: profit > 0 ? "#13C784" : "red",
+                            color: profit > 0 ? "rgb(14, 203, 129)" : "red",
                             fontWeight: 500,
                             width:"10%"
                           }}
@@ -238,10 +292,10 @@ const CoinTable = () => {
 
                           <div className="symbol_text" >
                           <div className="picture" style={{width:"14%"}}>
-                          {profit ? <IoMdArrowDropup style={{color:"#13C784"}}/>:<AiFillCaretDown style={{color:"red"}}/>}
+                          {row?.price_change_percentage_24h_in_currency>0  ?<IoMdArrowDropup style={{color:"#13C784"}}/> : <IoMdArrowDropdown style={{color:"red"}}/>}
                           </div>
                            <div className="price_content" style={{width:"83%"}}>
-                           {row.price_change_percentage_24h_in_currency.toFixed(2)}%
+                           {row?.price_change_percentage_24h_in_currency?.toFixed(2)}%
                            </div>
                            
                            </div>
@@ -249,46 +303,29 @@ const CoinTable = () => {
                           
                         </TableCell>
                         
-                        {/* <TableCell
-                          align="right"
-                          style={{
-                            color: profit > 0 ? "rgb(14, 203, 129)" : "red",
-                            fontWeight: 500,
-                            width:"10%"
-                          }}
-                        >
-                          
-      
-                          <div className="symbol_text" >
-                          <div className="picture" style={{width:"14%"}}>
-                          {profit ?<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" style={{color:"green"}}><path d="M201.4 137.4c12.5-12.5 32.8-12.5 45.3 0l160 160c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L224 205.3 86.6 342.6c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3l160-160z"/></svg> : <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" style={{color:"red"}}><path d="M201.4 374.6c12.5 12.5 32.8 12.5 45.3 0l160-160c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L224 306.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l160 160z"/></svg>}
-                          </div>
-                           <div className="price_content" style={{width:"83%"}}>
-                           {row.price_change_percentage_7d_in_currency.toFixed(2)}%
-                           </div>
-                           </div>
-                        </TableCell> */}
+                       
                       
                         <TableCell align="right" style={{color:"black",width:"10%"}}>
-                          {symbol}{" "}
-                          {/* {numberWithCommas(
-                            row.market_cap.toString().slice(0, -6)
-                          )}
-                          M */}
-                          {convertToInternationalCurrencySystem(row.market_cap)}
+                              {symbol}{" "}
+                              {convertToInternationalCurrencySystem( row?.market_cap)}
+                         
+                        
                         </TableCell>
                         
                             </TableRow>
                         )
                     })}
                     
-                   {page==1 ?  <HootDex/>:<></>}
+                
                  </TableBody>
                 </Table>
             )
         }
         
        </TableContainer>
+
+       
+
       <Pagination 
        count={(handleSearch()?.length/10).toFixed(0)}
        

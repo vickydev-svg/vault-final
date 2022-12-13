@@ -43,3 +43,168 @@ color:#005373;
 .amount{
     color:#005373;
 }
+
+.right_part{
+    width:10%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.navbar_crypto{
+    display: flex !important;
+    justify-content: space-between !important;
+    position: fixed !important;
+    background: rgba( 242, 233, 233, 0.3 );
+    box-shadow: 0 8px 32px 0 rgba( 31, 38, 135, 0.37 );
+    backdrop-filter: blur( 3px );
+    -webkit-backdrop-filter: blur( 3px );
+    border-radius: 10px;
+    border: 1px solid rgba( 255, 255, 255, 0.18 );
+    z-index: 10000000000;
+}
+
+.nav_content{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.left_part{
+    width:15%;
+}
+.crypto_data{
+    width: 95%;
+    display: flex;
+    margin: 10% 2.5% 10% 2.5%;
+    justify-content: space-between;
+    
+}
+
+.crypto_one_info_project{
+    width: 50%;
+    height: 65vh;
+}
+
+.crypto_stats_project{
+    width:40%;
+    background-color: #F8FAFD;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 0% 2% 0 2%;
+}
+.crypto_title {
+    font-size: 2rem;
+    color: black;
+    text-align: center !important;
+}
+.crypto_one_info{
+    width:50%;
+}
+.desc_info{
+    text-align: justify;
+    color: #005373;
+}
+
+.common_stats{
+   color:#59677E;
+   display: flex;
+   justify-content: space-between;
+}
+
+.price_today{
+    display: flex;
+    justify-content: space-between;
+}
+.change_price_text{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.desc_info a{
+  color: blue;
+}
+
+.market_cap_text{
+    text-align: center;
+    color: darkgray;
+}
+.market_cap_not_change{
+    display: flex;
+    flex-direction: column;
+}
+.common_link{
+    background-color: #F0F2F5;
+    color: black;
+    padding: 8px;
+    transition: all .4s;
+    -webkit-transition: all .4s;
+    -moz-transition: all .4s;
+    -ms-transition: all .4s;
+    -o-transition: all .4s;
+    border-radius: 10px;
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    -ms-border-radius: 10px;
+    -o-border-radius: 10px;
+    font-size: 12px;
+    display: flex !important;
+    justify-content: space-between;
+    align-items: center;
+    display: inline-block;
+    width: 110px;
+}
+.coin_org_link{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.coin_org_link:hover{
+    color: white;
+}
+.coin_link_info{
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+
+}
+
+.coin_link_name{
+    margin: 0 10px 0px 10px;
+    font-size: 30px;
+}
+.source_code{
+    width: 124px;
+}
+.common_link:hover{
+    background-color: #808A9D;
+    color: white;
+}
+.change_market_cap{
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    
+}
+.crypto_links{
+    height: 28%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    width: 64%;
+}
+
+.coin_link_symbol{
+    color: darkgray;
+}
+.first_row{
+    display: flex;
+    justify-content: space-between;
+}
+@media only screen and (max-width: 600px) {
+   .left_part{
+    width:61%;
+   }
+   }
