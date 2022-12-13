@@ -55,7 +55,7 @@ const CoinTable = () => {
     const {currency,symbol} = CryptoState()
     // const [changeCoin,setCoinChange] = useState([]);
     const [coins,setCoins] = useState([]);
-    const [loading,setLoading]= useState(false);
+    const [loading,setLoading]= useState(true);
     const [tokenlLoading,setTokenLoading] = useState(false)
     const [search,setSearch] = useState("");
     const [page,setPage]=useState(1);
@@ -67,7 +67,7 @@ const CoinTable = () => {
 
   const fetchCoins = async () => {
       setCoins([])
-        setLoading(true)
+     
       const { data } = await axios.get(CoinList(currency));
     const wrapToken = await axios.get(`https://api.pecunovus.net/wallet/get_all_tokens_wrap_new`)
     const projectToken = await axios.get(`https://api.pecunovus.net/hootdex/all-project-token`)
@@ -137,8 +137,11 @@ const CoinTable = () => {
     useEffect(()=>{
     fetchCoins();
         
-    },[])
+    }, [])
+  
+  useEffect(()=>{coins.sort((a,b)=>a.market_cap>b.market_cap? -1 : 1)},[ loading])
  
+
   
    function convertToInternationalCurrencySystem(labelValue) {
       // Nine Zeroes for Billions
@@ -211,7 +214,13 @@ const CoinTable = () => {
                         
                             onClick={() => {
                              
-                              row?.symbol[0]==='X'? navigate(`/coins/${row.symbol}`):row.symbol[row.symbol.length-1]==='x'?  navigate(`/project-token/${row.token_symbol}`):row.symbol[row.symbol.length-1]==='h'?navigate(`holding-token/${row.token_symbol}`): navigate(`/coins/${row.id}`)
+                              row?.symbol[0] === 'X' ?
+                                navigate(`/wrap-token/${row.symbol}`) :
+                                row.symbol[row.symbol.length - 1] === 'x' ?
+                                  navigate(`/project-token/${row.token_symbol}`) :
+                                  row.symbol[row.symbol.length - 1] === 'h' ?
+                                    navigate(`holding-token/${row.token_symbol}`) :
+                                    navigate(`/coins/${row.id}`)
                              
                             }}
                             

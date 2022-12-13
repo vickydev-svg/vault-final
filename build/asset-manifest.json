@@ -1,16 +1,16 @@
 {
   "files": {
     "main.css": "/static/css/main.798e72b7.css",
-    "main.js": "/static/js/main.28fdcb3b.js",
+    "main.js": "/static/js/main.cd9669de.js",
     "static/media/pictureCenter.svg": "/static/media/pictureCenter.b80666875f64abca10360624638b5de5.svg",
     "static/media/megahootvaultLogo.svg": "/static/media/megahootvaultLogo.aa06b443c527b6b4e8968d527c6dcf92.svg",
     "static/media/soapbox_btn.svg": "/static/media/soapbox_btn.1cfc53a7dcd97332dc630f9c499a343d.svg",
     "index.html": "/index.html",
     "main.798e72b7.css.map": "/static/css/main.798e72b7.css.map",
-    "main.28fdcb3b.js.map": "/static/js/main.28fdcb3b.js.map"
+    "main.cd9669de.js.map": "/static/js/main.cd9669de.js.map"
   },
   "entrypoints": [
     "static/css/main.798e72b7.css",
-    "static/js/main.28fdcb3b.js"
+    "static/js/main.cd9669de.js"
   ]
 }
